@@ -10,7 +10,7 @@ export function ProfileNav() {
       <div className="relative">
         {/* ── Profile Popup ─────────────────────────────────────────────────── */}
         <div
-          className={`absolute bottom-full left-0 mb-4 w-[280px] liquid-glass rounded-2xl p-5 transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] origin-bottom-left ${
+          className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-[280px] liquid-glass rounded-2xl p-5 transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] origin-bottom ${
             isProfileOpen
               ? "opacity-100 scale-100 translate-y-0"
               : "opacity-0 scale-95 translate-y-4 pointer-events-none"

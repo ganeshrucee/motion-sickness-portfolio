@@ -20,6 +20,7 @@ export function InfiniteGrid({ isMobile, onProjectSelect }: InfiniteGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
+  const tilesCacheRef = useRef<HTMLElement[]>([]);
 
   const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -73,6 +74,11 @@ export function InfiniteGrid({ isMobile, onProjectSelect }: InfiniteGridProps) {
       });
   }, []);
 
+  // Clear tiles cache when data changes to ensure accurate scaling references
+  useEffect(() => {
+    tilesCacheRef.current = [];
+  }, [projects, isLoading]);
+
   useEffect(() => {
     const init = getInitial();
     target.current = { ...init };
@@ -94,9 +100,12 @@ export function InfiniteGrid({ isMobile, onProjectSelect }: InfiniteGridProps) {
         const viewportCenterY = window.innerHeight / 2;
         const maxDist = Math.min(window.innerWidth, window.innerHeight) * 0.9;
 
-        const tiles = gridRef.current.querySelectorAll('.dynamic-tile');
-        tiles.forEach((tile: Element) => {
-          const htmlElement = tile as HTMLElement;
+        if (tilesCacheRef.current.length === 0) {
+          const els = gridRef.current.querySelectorAll('.dynamic-tile');
+          tilesCacheRef.current = Array.from(els) as HTMLElement[];
+        }
+
+        tilesCacheRef.current.forEach((htmlElement) => {
           const baseX = parseFloat(htmlElement.dataset.x || '0');
           const baseY = parseFloat(htmlElement.dataset.y || '0');
 
@@ -178,7 +187,7 @@ export function InfiniteGrid({ isMobile, onProjectSelect }: InfiniteGridProps) {
   return (
     <div
       ref={containerRef}
-      className="relative w-screen h-screen overflow-hidden touch-none select-none"
+      className="relative w-screen h-[100dvh] overflow-hidden touch-none select-none"
     >
       <div
         ref={gridRef}

@@ -15,7 +15,8 @@ export default function App() {
   }, []);
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-white">
+    <div className="relative w-screen h-[100dvh] overflow-hidden bg-white">
+
       <InfiniteGrid isMobile={isMobile} onProjectSelect={setSelectedProject} />
       
       <header className="absolute top-0 left-0 right-0 z-20 flex justify-center pt-6 pointer-events-none">
