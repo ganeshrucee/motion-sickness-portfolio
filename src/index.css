@@ -1,0 +1,104 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: 'Inter', sans-serif;
+  --font-handwriting: 'Caveat', cursive;
+
+  --color-background: #ffffff;
+  --color-foreground: #0a0a0a;
+  --color-thumbnail: #fdd5d5;
+  --color-thumbnail-hover: #f9b8b8;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  background: #ffffff;
+}
+
+/* ─── Apple Liquid Glass ────────────────────────────────────────────────────
+   Multi-layered frosted glass replicating iOS 26 / macOS Tahoe effect.
+   NOT using shadcn — hand-built per user request.
+──────────────────────────────────────────────────────────────────────────── */
+.liquid-glass {
+  position: relative;
+  overflow: hidden;
+  /* Frosted blur */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.20) 50%,
+    rgba(255, 255, 255, 0.35) 100%
+  );
+  backdrop-filter: blur(40px) saturate(200%) brightness(1.05);
+  -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(1.05);
+
+  /* Double border: outer soft glow + inner light edge */
+  border: 1px solid rgba(255, 255, 255, 0.60);
+  box-shadow:
+    /* Outer soft shadow */
+    0 8px 32px rgba(0, 0, 0, 0.06),
+    0 2px 12px rgba(0, 0, 0, 0.04),
+    /* Inner top highlight (the "glass edge" shine) */
+    inset 0 1px 0 rgba(255, 255, 255, 0.70),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Specular highlight — that subtle top-left shine on real glass */
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.50) 0%,
+    transparent 40%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Grid canvas — GPU accelerated */
+.grid-canvas {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.thumb-card {
+  background: #fdd5d5;
+  border-radius: 16px;
+  aspect-ratio: 1 / 1;
+  /* PRD: hardware acceleration and dynamic scaling */
+  transform: translate3d(var(--lens-tx, 0px), var(--lens-ty, 0px), 0) scale(var(--lens-scale, 1));
+  /* Remove transform from transition, so JS can animate it instantly */
+  transition: box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.25s;
+}
+
+.thumb-card:hover {
+  background: #f9b8b8;
+  /* We let lens-scale handle size, hover just boosts shadow */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Edge vignette — softer, more subtle */
+.vignette {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(255, 255, 255, 0.25) 75%,
+    rgba(255, 255, 255, 0.65) 100%
+  );
+  pointer-events: none;
+}
