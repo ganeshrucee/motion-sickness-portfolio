@@ -26,9 +26,9 @@ export function InfiniteGrid({ isMobile, onProjectSelect }: InfiniteGridProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState<string | null>(null);
 
-  const ITEM_W = isMobile ? 120 : 240;
-  const ITEM_H = isMobile ? 120 : 240;
-  const GAP = isMobile ? 8 : 16;
+  const ITEM_W = isMobile ? 150 : 240;
+  const ITEM_H = isMobile ? 150 : 240;
+  const GAP = isMobile ? 12 : 16;
   
   const GRID_W = COLS * ITEM_W + (COLS - 1) * GAP;
   const GRID_H = ROWS * ITEM_H + (ROWS - 1) * GAP;
