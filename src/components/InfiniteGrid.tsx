@@ -105,7 +105,11 @@ export function InfiniteGrid({ isMobile, onProjectSelect }: InfiniteGridProps) {
           tilesCacheRef.current = Array.from(els) as HTMLElement[];
         }
 
-        tilesCacheRef.current.forEach((htmlElement) => {
+        const tiles = tilesCacheRef.current;
+        const len = tiles.length;
+        
+        for (let i = 0; i < len; i++) {
+          const htmlElement = tiles[i];
           const baseX = parseFloat(htmlElement.dataset.x || '0');
           const baseY = parseFloat(htmlElement.dataset.y || '0');
 
@@ -114,22 +118,23 @@ export function InfiniteGrid({ isMobile, onProjectSelect }: InfiniteGridProps) {
 
           const dx = screenX - viewportCenterX;
           const dy = screenY - viewportCenterY;
-          const dist = Math.hypot(dx, dy);
+          const dist = Math.sqrt(dx * dx + dy * dy);
 
           // Lens formula: 1.0 at center, scaling down to 0.60 at maxDist
-          const normalizedDist = Math.min(dist / maxDist, 1);
-          const scale = 0.60 + 0.40 * Math.pow(1 - normalizedDist, 2);
+          let normalizedDist = dist / maxDist;
+          if (normalizedDist > 1) normalizedDist = 1;
+          
+          const diff = 1 - normalizedDist;
+          const scale = 0.60 + 0.40 * (diff * diff);
 
-          // Dynamic Spacing tightening: pull smaller cards inward to close the wider gap organic visual
+          // Dynamic Spacing tightening: pull smaller cards inward
           const pullFactor = (1 - scale) * 0.28;
           const tx = -dx * pullFactor;
           const ty = -dy * pullFactor;
 
-          // Use inline custom property so CSS can handle hardware acceleration cleanly
-          htmlElement.style.setProperty('--lens-scale', scale.toString());
-          htmlElement.style.setProperty('--lens-tx', `${tx}px`);
-          htmlElement.style.setProperty('--lens-ty', `${ty}px`);
-        });
+          // Direct transform is exponentially faster than CSS custom properties on mobile
+          htmlElement.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scale})`;
+        }
       }
       rafRef.current = requestAnimationFrame(tick);
     };
