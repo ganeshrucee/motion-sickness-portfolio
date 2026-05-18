@@ -21,7 +21,8 @@ export function InfiniteGrid({ isMobile, onProjectSelect }: InfiniteGridProps) {
   const gridRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
 
-  const [projects, setProjects] = useState<ProjectItem[]>(defaultProjects);
+  const [projects, setProjects] = useState<ProjectItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState<string | null>(null);
 
   const ITEM_W = isMobile ? 120 : 240;
@@ -60,10 +61,15 @@ export function InfiniteGrid({ isMobile, onProjectSelect }: InfiniteGridProps) {
       .then((data) => {
         if (data && data.length > 0) {
           setProjects(data);
+        } else {
+          setProjects(defaultProjects);
         }
+        setIsLoading(false);
       })
       .catch((err) => {
         console.error('Error loading projects from Sanity, using fallback defaults:', err);
+        setProjects(defaultProjects);
+        setIsLoading(false);
       });
   }, []);
 
@@ -202,8 +208,20 @@ export function InfiniteGrid({ isMobile, onProjectSelect }: InfiniteGridProps) {
                   const tileCenterX = blockOffsetX + tileCol * (ITEM_W + GAP) + ITEM_W / 2;
                   const tileCenterY = blockOffsetY + tileRow * (ITEM_H + GAP) + ITEM_H / 2;
 
-                  const project = projects[i % projects.length];
                   const uniqueKey = `${row}-${col}-${i}`;
+
+                  if (isLoading || projects.length === 0) {
+                    return (
+                      <div
+                        key={uniqueKey}
+                        className="thumb-card dynamic-tile relative overflow-hidden bg-[#fdd5d5] animate-pulse border border-zinc-100/50"
+                        data-x={tileCenterX}
+                        data-y={tileCenterY}
+                      />
+                    );
+                  }
+
+                  const project = projects[i % projects.length];
 
                   return (
                     <div
